@@ -6,57 +6,484 @@
 <title>Nippon Loop | 日本一周マップ</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
 <style>
-:root{--bg:#f4f7fb;--text:#132238;--muted:#6f8094;--border:#dfe6ef}
-*{box-sizing:border-box}html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}body{min-height:100dvh}
-header{height:60px;padding:9px 14px;display:flex;align-items:center;justify-content:space-between;background:#102642;color:#fff}.brand{font-weight:900;letter-spacing:.12em;font-size:16px}.sub{font-size:10px;opacity:.72;margin-top:2px}.score{text-align:right;font-size:9px;opacity:.85}.score b{display:block;font-size:21px;line-height:1}
-main{padding:8px;max-width:1500px;margin:auto}.legend{display:flex;gap:5px;overflow-x:auto;padding:0 0 7px;scrollbar-width:none}.legend::-webkit-scrollbar{display:none}.legend-item{flex:0 0 auto;display:flex;align-items:center;gap:5px;background:#fff;border:1px solid var(--border);border-radius:999px;padding:6px 9px;font-size:11px;white-space:nowrap}.legend-dot{width:9px;height:9px;border-radius:50%}
-.map-wrap{position:relative;background:#fff;border:1px solid var(--border);border-radius:16px;overflow:hidden}#map{height:calc(100dvh - 105px);min-height:500px;max-height:900px;width:100%;background:#e7edf3}
-.metrics{position:absolute;z-index:500;top:9px;left:48px;display:flex;gap:5px;pointer-events:none}.metric{background:rgba(255,255,255,.93);backdrop-filter:blur(8px);border:1px solid rgba(205,215,226,.9);border-radius:10px;padding:6px 8px;min-width:64px}.metric b{display:block;font-size:16px;line-height:1}.metric span{font-size:8px;color:var(--muted)}
-.loading{position:absolute;z-index:520;left:50%;bottom:20px;transform:translateX(-50%);background:rgba(16,38,66,.92);color:white;border-radius:999px;padding:8px 12px;font-size:11px;white-space:nowrap;max-width:90%;overflow:hidden;text-overflow:ellipsis}.loading.hidden{display:none}
-.note{position:absolute;z-index:500;right:8px;bottom:8px;background:rgba(255,255,255,.9);border:1px solid var(--border);border-radius:8px;padding:5px 7px;font-size:8px;color:var(--muted)}
-.pin{position:relative;width:16px;height:16px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid #fff;box-shadow:0 1px 5px #0005}.pin:after{content:"";position:absolute;width:4px;height:4px;background:#fff;border-radius:50%;left:4px;top:4px}.leaflet-div-icon{background:transparent;border:0}.leaflet-control-attribution{font-size:7px}.leaflet-tooltip{font-size:12px;font-weight:700;border:0;border-radius:7px;box-shadow:0 2px 10px #0002}
-.sheet-backdrop{position:fixed;inset:0;background:#07122166;z-index:2000;display:flex;align-items:flex-end;justify-content:center;padding:10px}.sheet-backdrop.hidden{display:none}.sheet{width:min(520px,100%);background:#fff;border-radius:20px;padding:17px 15px calc(15px + env(safe-area-inset-bottom))}.sheet-head{display:flex;justify-content:space-between;gap:12px;align-items:start;margin-bottom:12px}.sheet h2{margin:2px 0 0;font-size:27px}.sheet small{color:var(--muted)}.close-btn{border:0;background:#eef2f6;width:36px;height:36px;border-radius:50%;font-size:21px;color:#455a72}.status-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.status-btn{border:1px solid var(--border);background:#fff;border-radius:13px;padding:12px;text-align:left;font:inherit;font-weight:800;color:var(--text)}.status-btn span{font-size:20px;margin-right:7px}.status-btn.active{border-width:2px}
-footer{font-size:8px;color:#7d8b9c;text-align:center;padding:6px 10px 10px}
-@media(max-width:640px){header{height:54px;padding:7px 10px}.brand{font-size:14px}.sub{font-size:9px}.score b{font-size:19px}main{padding:6px}#map{height:calc(100dvh - 94px);min-height:470px}.metrics{left:44px;top:7px}.metric{min-width:59px;padding:5px 7px}.metric b{font-size:15px}.legend-item{font-size:10px;padding:5px 8px}.status-grid{grid-template-columns:1fr 1fr}.note{display:none}}
+:root{--bg:#f4f7fb;--text:#132238;--muted:#6f8094;--border:#dfe6ef;--panel:#fff}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{min-height:100dvh}
+button{font:inherit}
+header{height:58px;padding:8px 13px;display:flex;align-items:center;justify-content:space-between;background:#102642;color:#fff}
+.brand{font-weight:900;letter-spacing:.12em;font-size:15px}
+.sub{font-size:9px;opacity:.72;margin-top:2px}
+.score{text-align:right;font-size:9px;opacity:.88}
+.score b{display:block;font-size:20px;line-height:1}
+main{padding:6px;max-width:1500px;margin:auto}
+.legend{display:flex;gap:4px;overflow-x:auto;padding:0 0 5px;scrollbar-width:none}
+.legend::-webkit-scrollbar{display:none}
+.legend-item{flex:0 0 auto;display:flex;align-items:center;gap:4px;background:#fff;border:1px solid var(--border);border-radius:999px;padding:4px 7px;font-size:9px;white-space:nowrap}
+.legend-dot{width:8px;height:8px;border-radius:50%}
+.map-wrap{position:relative;background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden}
+#map{height:calc(100dvh - 88px);min-height:500px;max-height:940px;width:100%;background:#edf0f2}
+.metrics{position:absolute;z-index:500;top:7px;left:7px;display:flex;gap:4px;pointer-events:none}
+.metric{background:rgba(255,255,255,.9);backdrop-filter:blur(7px);border:1px solid rgba(209,218,228,.86);border-radius:9px;padding:5px 7px;min-width:57px}
+.metric b{display:block;font-size:14px;line-height:1}
+.metric span{font-size:7px;color:var(--muted)}
+.reset-map{position:absolute;z-index:650;right:8px;top:8px;border:1px solid rgba(207,217,227,.9);background:rgba(255,255,255,.93);color:#36506d;border-radius:9px;padding:7px 9px;font-size:10px;font-weight:800;box-shadow:0 1px 5px #0001}
+.loading{position:absolute;z-index:700;left:50%;bottom:14px;transform:translateX(-50%);background:rgba(16,38,66,.9);color:white;border-radius:999px;padding:7px 11px;font-size:10px;white-space:nowrap;max-width:88%;overflow:hidden;text-overflow:ellipsis}
+.loading.hidden{display:none}
+.pin-hit{width:44px;height:44px;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.pin-core{width:15px;height:15px;border-radius:50%;border:2px solid #fff;box-shadow:0 1px 4px #0005,0 0 0 1px #0001}
+.leaflet-div-icon{background:transparent;border:0}
+.leaflet-control-attribution{font-size:6px;background:rgba(255,255,255,.72)!important}
+.leaflet-control-container .leaflet-control-zoom{display:none}
+.sheet-backdrop{position:fixed;inset:0;background:#07122166;z-index:2000;display:flex;align-items:flex-end;justify-content:center;padding:8px}
+.sheet-backdrop.hidden{display:none}
+.sheet{width:min(560px,100%);max-height:min(88dvh,760px);overflow:auto;background:#fff;border-radius:20px;padding:16px 14px calc(14px + env(safe-area-inset-bottom))}
+.sheet-head{display:flex;justify-content:space-between;gap:12px;align-items:start;margin-bottom:10px}
+.sheet h2{margin:1px 0 0;font-size:26px}
+.sheet small{color:var(--muted)}
+.close-btn{border:0;background:#eef2f6;width:36px;height:36px;border-radius:50%;font-size:21px;color:#455a72;flex:0 0 auto}
+.info-section{border-top:1px solid #edf1f5;padding-top:11px;margin-top:11px}
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+.section-head h3{font-size:13px;margin:0}
+.source{font-size:8px;color:#8996a5;text-decoration:none}
+.info-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+.info-box{background:#f6f8fb;border:1px solid #e6ebf1;border-radius:11px;padding:9px}
+.info-box span{display:block;font-size:8px;color:var(--muted);margin-bottom:3px}
+.info-box b{display:block;font-size:15px;line-height:1.15}
+.info-box em{display:block;font-size:8px;font-style:normal;color:#8996a5;margin-top:3px}
+.city-place{font-size:10px;color:#60738a;margin-bottom:8px}
+.property-row{display:grid;grid-template-columns:1.25fr 1.25fr .7fr;gap:7px}
+.property-row .info-box b{font-size:13px}
+.status-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.status-btn{border:1px solid var(--border);background:#fff;border-radius:12px;padding:10px 7px;text-align:left;font-weight:800;color:var(--text);min-height:48px}
+.status-btn span{font-size:17px;margin-right:4px}
+.status-btn.active{border-width:2px}
+.status-help{font-size:8px;color:#8492a2;margin:6px 0 0}
+.error-text{font-size:10px;color:#8b6570}
+footer{font-size:7px;color:#7d8b9c;text-align:center;padding:5px 8px 8px}
+@media(max-width:640px){
+ header{height:52px;padding:7px 9px}.brand{font-size:13px}.sub{font-size:8px}.score b{font-size:18px}
+ main{padding:4px}#map{height:calc(100dvh - 77px);min-height:470px}
+ .legend{padding-bottom:4px}.legend-item{font-size:8px;padding:4px 6px}
+ .metric{min-width:53px;padding:4px 6px}.metric b{font-size:13px}
+ .sheet{padding:14px 12px calc(12px + env(safe-area-inset-bottom))}.sheet h2{font-size:24px}
+ .status-grid{grid-template-columns:repeat(2,1fr)}
+ .property-row{grid-template-columns:1fr 1fr}.property-row .info-box:last-child{grid-column:span 2}
+}
 </style>
 </head>
 <body>
-<header><div><div class="brand">NIPPON LOOP</div><div class="sub">桃鉄2020 物件駅ベース · 日本一周管理</div></div><div class="score"><b id="pct">0%</b>338駅 到達率</div></header>
+<header>
+  <div><div class="brand">NIPPON LOOP</div><div class="sub">桃鉄2020 物件駅ベース · 日本一周管理</div></div>
+  <div class="score"><b id="pct">0%</b>338駅 到達率</div>
+</header>
 <main>
-<div id="legend" class="legend"></div>
-<section class="map-wrap">
-<div id="map"></div>
-<div class="metrics"><div class="metric"><b id="visited">0</b><span>通過以上</span></div><div class="metric"><b id="stayed">0</b><span>泊まった以上</span></div><div class="metric"><b id="left">338</b><span>行ってない</span></div></div>
-<div id="loading" class="loading">都市位置を読み込み中…</div><div class="note">線は近隣都市を結ぶ簡略ネットワーク</div>
-</section>
+  <div id="legend" class="legend"></div>
+  <section class="map-wrap">
+    <div id="map"></div>
+    <div class="metrics">
+      <div class="metric"><b id="visited">0</b><span>通過以上</span></div>
+      <div class="metric"><b id="stayed">0</b><span>泊まった以上</span></div>
+      <div class="metric"><b id="left">338</b><span>行ってない</span></div>
+    </div>
+    <button id="resetMap" class="reset-map" type="button">全国</button>
+    <div id="loading" class="loading">都市位置を読み込み中…</div>
+  </section>
 </main>
-<footer>地図 © OpenStreetMap contributors · 自治体位置: code4fukui/localgovjp · 駅名: Game8参考</footer>
-<div id="sheetBackdrop" class="sheet-backdrop hidden"><div class="sheet"><div class="sheet-head"><div><small id="sheetRegion"></small><h2 id="sheetName"></h2></div><button id="closeSheetButton" class="close-btn" aria-label="閉じる">×</button></div><div id="statusGrid" class="status-grid"></div></div></div>
+<footer>
+地図 © OpenStreetMap contributors © CARTO · 都市位置: code4fukui/localgovjp · 桃鉄物件駅: Game8参考<br>
+このサービスは、統計ダッシュボードのAPI機能を使用していますが、サービスの内容は国によって保証されたものではありません。
+</footer>
+
+<div id="sheetBackdrop" class="sheet-backdrop hidden">
+  <div class="sheet">
+    <div class="sheet-head">
+      <div><small id="sheetRegion"></small><h2 id="sheetName"></h2></div>
+      <button id="closeSheetButton" class="close-btn" aria-label="閉じる" type="button">×</button>
+    </div>
+
+    <section class="info-section" style="border-top:0;padding-top:0;margin-top:0">
+      <div class="section-head"><h3>現実の都市規模</h3><a class="source" href="https://dashboard.e-stat.go.jp/" target="_blank" rel="noopener">総務省 統計ダッシュボード</a></div>
+      <div id="cityPlace" class="city-place"></div>
+      <div class="info-grid">
+        <div class="info-box"><span>人口</span><b id="populationValue">取得中…</b><em id="populationMeta"></em></div>
+        <div class="info-box"><span>事業所数（経済規模の目安）</span><b id="businessValue">取得中…</b><em id="businessMeta"></em></div>
+      </div>
+    </section>
+
+    <section class="info-section">
+      <div class="section-head"><h3>桃鉄2020 物件</h3><a class="source" href="https://game8.jp/momotetsu-teiban/359686" target="_blank" rel="noopener">Game8</a></div>
+      <div class="property-row">
+        <div class="info-box"><span>独占価格</span><b id="momoPrice">—</b></div>
+        <div class="info-box"><span>独占時収益</span><b id="momoIncome">—</b></div>
+        <div class="info-box"><span>収益率</span><b id="momoYield">—</b></div>
+      </div>
+    </section>
+
+    <section class="info-section">
+      <div class="section-head"><h3>訪問ステータス</h3><span class="source">選ぶと即保存</span></div>
+      <div id="statusGrid" class="status-grid"></div>
+      <p class="status-help">「行ってない」を選ぶと、この都市の訪問記録を削除します。</p>
+    </section>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="/data/hokkaido.js"></script><script src="/data/tohoku.js"></script><script src="/data/kanto.js"></script><script src="/data/chubu.js"></script><script src="/data/kinki.js"></script><script src="/data/chugoku.js"></script><script src="/data/shikoku.js"></script><script src="/data/kyushu.js"></script>
+<script src="/data/hokkaido.js"></script>
+<script src="/data/tohoku.js"></script>
+<script src="/data/kanto.js"></script>
+<script src="/data/chubu.js"></script>
+<script src="/data/kinki.js"></script>
+<script src="/data/chugoku.js"></script>
+<script src="/data/shikoku.js"></script>
+<script src="/data/kyushu.js"></script>
+<script src="/data/momotetsu-summary.js"></script>
 <script>
-const el={legend:document.getElementById('legend'),pct:document.getElementById('pct'),visited:document.getElementById('visited'),stayed:document.getElementById('stayed'),left:document.getElementById('left'),loading:document.getElementById('loading'),sheetBackdrop:document.getElementById('sheetBackdrop'),sheetRegion:document.getElementById('sheetRegion'),sheetName:document.getElementById('sheetName'),statusGrid:document.getElementById('statusGrid'),closeSheetButton:document.getElementById('closeSheetButton')};
-const STATIONS=Object.entries(window.STATION_REGIONS||{}).flatMap(([region,names])=>names.map((name,i)=>({id:`${region}-${i}`,name,region})));
-const LEVELS=[{name:'行ってない',icon:'○',color:'#9aa7b5'},{name:'通過した',icon:'🚃',color:'#4f83cc'},{name:'歩いた',icon:'👟',color:'#24a176'},{name:'飲んだ',icon:'🍺',color:'#d99520'},{name:'泊まった',icon:'🛏️',color:'#7d59b5'},{name:'住んだ',icon:'🏠',color:'#cf4f78'}];
-const REGION_PREFS={'北海道':['北海道'],'東北':['青森県','岩手県','宮城県','秋田県','山形県','福島県'],'関東':['茨城県','栃木県','群馬県','埼玉県','千葉県','東京都','神奈川県'],'中部':['新潟県','富山県','石川県','福井県','山梨県','長野県','岐阜県','静岡県','愛知県'],'近畿':['三重県','滋賀県','京都府','大阪府','兵庫県','奈良県','和歌山県'],'中国':['鳥取県','島根県','岡山県','広島県','山口県'],'四国':['徳島県','香川県','愛媛県','高知県'],'九州・沖縄':['福岡県','佐賀県','長崎県','熊本県','大分県','宮崎県','鹿児島県','沖縄県']};
-const ALIAS={'ススキノ':'札幌市 中央区','定山渓':'札幌市 南区','襟裳':'えりも町','摩周':'弟子屈町','阿寒':'釧路市','竜飛':'外ヶ浜町','鳴子':'大崎市','金木':'五所川原市','角館':'仙北市','菜の花':'横浜町','幕張':'千葉市 美浜区','浅草':'台東区','お台場':'港区','千駄ヶ谷':'渋谷区','東京':'千代田区','銀座':'中央区','原宿':'渋谷区','日本橋':'中央区','後楽園':'文京区','上野':'台東区','秋葉原':'千代田区','中華街':'横浜市 中区','佐原':'香取市','大久保':'新宿区','伊豆大島':'大島町','八丈島':'八丈町','名古屋港':'名古屋市 港区','香林坊':'金沢市','栄':'名古屋市 中区','茶屋街':'金沢市','修善寺':'伊豆市','和倉温泉':'七尾市','東尋坊':'坂井市','伊豆高原':'伊東市','小淵沢':'北杜市','天保山':'大阪市 港区','北浜':'大阪市 中央区','天王寺':'大阪市 天王寺区','なんば':'大阪市 中央区','京橋':'大阪市 都島区','嵐山':'京都市 右京区','有馬':'神戸市 北区','城崎':'豊岡市','祇園':'京都市 東山区','淡路島':'洲本市','出石':'豊岡市','鶴橋':'大阪市 生野区','鞆の浦':'福山市','石見銀山':'大田市','湯田温泉':'山口市','生口島':'尾道市','大根島':'松江市','仙崎':'長門市','蒜山':'真庭市','日生':'備前市','宮島':'廿日市市','道後':'松山市','大三島':'今治市','四万十川':'四万十市','中洲':'福岡市 博多区','博多':'福岡市 博多区','門司港':'北九州市 門司区','小倉':'北九州市 小倉北区','湯布院':'由布市','屋久島':'屋久島町','知覧':'南九州市','奄美大島':'奄美市','石垣島':'石垣市','種子島':'西之表市','秋月':'朝倉市','桜島':'鹿児島市','茂木':'長崎市'};
-let visits=JSON.parse(localStorage.getItem('nippon-loop-visits-v3')||'{}');const markerById=new Map();let routeLayer=null;
-const map=L.map('map',{zoomControl:true,preferCanvas:true,minZoom:4,maxZoom:16,worldCopyJump:false}).setView([36.2,138.2],5);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
+const el={
+ legend:document.getElementById('legend'),pct:document.getElementById('pct'),
+ visited:document.getElementById('visited'),stayed:document.getElementById('stayed'),left:document.getElementById('left'),
+ loading:document.getElementById('loading'),resetMap:document.getElementById('resetMap'),
+ sheetBackdrop:document.getElementById('sheetBackdrop'),sheetRegion:document.getElementById('sheetRegion'),
+ sheetName:document.getElementById('sheetName'),statusGrid:document.getElementById('statusGrid'),
+ closeSheetButton:document.getElementById('closeSheetButton'),cityPlace:document.getElementById('cityPlace'),
+ populationValue:document.getElementById('populationValue'),populationMeta:document.getElementById('populationMeta'),
+ businessValue:document.getElementById('businessValue'),businessMeta:document.getElementById('businessMeta'),
+ momoPrice:document.getElementById('momoPrice'),momoIncome:document.getElementById('momoIncome'),momoYield:document.getElementById('momoYield')
+};
+
+const LEVELS=[
+ {name:'行ってない',icon:'○',color:'#9aa7b5'},
+ {name:'通過した',icon:'🚃',color:'#4f83cc'},
+ {name:'歩いた',icon:'👟',color:'#24a176'},
+ {name:'飲んだ',icon:'🍺',color:'#d99520'},
+ {name:'泊まった',icon:'🛏️',color:'#7d59b5'},
+ {name:'住んだ',icon:'🏠',color:'#cf4f78'}
+];
+
+const STATIONS=Object.entries(window.STATION_REGIONS||{}).flatMap(([region,names])=>
+ names.map((name,i)=>{
+   const m=(window.MOMOTETSU_SUMMARY_BY_REGION?.[region]||[])[i]||[];
+   return {id:`${region}-${i}`,name,region,momo:{price:m[0]||'—',income:m[1]||'—',yield:m[2]||'—'}};
+ })
+);
+
+const REGION_PREFS={
+ '北海道':['北海道'],
+ '東北':['青森県','岩手県','宮城県','秋田県','山形県','福島県'],
+ '関東':['茨城県','栃木県','群馬県','埼玉県','千葉県','東京都','神奈川県'],
+ '中部':['新潟県','富山県','石川県','福井県','山梨県','長野県','岐阜県','静岡県','愛知県'],
+ '近畿':['三重県','滋賀県','京都府','大阪府','兵庫県','奈良県','和歌山県'],
+ '中国':['鳥取県','島根県','岡山県','広島県','山口県'],
+ '四国':['徳島県','香川県','愛媛県','高知県'],
+ '九州・沖縄':['福岡県','佐賀県','長崎県','熊本県','大分県','宮崎県','鹿児島県','沖縄県']
+};
+
+const ALIAS={
+ 'ススキノ':'札幌市 中央区','定山渓':'札幌市 南区','襟裳':'えりも町','摩周':'弟子屈町','阿寒':'釧路市',
+ '竜飛':'外ヶ浜町','鳴子':'大崎市','金木':'五所川原市','角館':'仙北市','菜の花':'横浜町',
+ '幕張':'千葉市 美浜区','浅草':'台東区','お台場':'港区','千駄ヶ谷':'渋谷区','東京':'千代田区',
+ '銀座':'中央区','原宿':'渋谷区','日本橋':'中央区','後楽園':'文京区','上野':'台東区','秋葉原':'千代田区',
+ '中華街':'横浜市 中区','佐原':'香取市','大久保':'新宿区','伊豆大島':'大島町','八丈島':'八丈町',
+ '名古屋港':'名古屋市 港区','香林坊':'金沢市','栄':'名古屋市 中区','茶屋街':'金沢市','修善寺':'伊豆市',
+ '和倉温泉':'七尾市','東尋坊':'坂井市','伊豆高原':'伊東市','小淵沢':'北杜市',
+ '天保山':'大阪市 港区','北浜':'大阪市 中央区','天王寺':'大阪市 天王寺区','なんば':'大阪市 中央区',
+ '京橋':'大阪市 都島区','嵐山':'京都市 右京区','有馬':'神戸市 北区','城崎':'豊岡市','祇園':'京都市 東山区',
+ '淡路島':'洲本市','出石':'豊岡市','鶴橋':'大阪市 生野区','鞆の浦':'福山市','石見銀山':'大田市',
+ '湯田温泉':'山口市','生口島':'尾道市','大根島':'松江市','仙崎':'長門市','蒜山':'真庭市','日生':'備前市',
+ '宮島':'廿日市市','道後':'松山市','大三島':'今治市','四万十川':'四万十市',
+ '中洲':'福岡市 博多区','博多':'福岡市 博多区','門司港':'北九州市 門司区','小倉':'北九州市 小倉北区',
+ '湯布院':'由布市','屋久島':'屋久島町','知覧':'南九州市','奄美大島':'奄美市','石垣島':'石垣市',
+ '種子島':'西之表市','秋月':'朝倉市','桜島':'鹿児島市','茂木':'長崎市'
+};
+
+let visits=JSON.parse(localStorage.getItem('nippon-loop-visits-v3')||'{}');
+const markerById=new Map();
+const resolvedStations=[];
+let routeLayer=null;
+let fullBounds=null;
+let activeStation=null;
+
+const map=L.map('map',{
+ zoomControl:false,preferCanvas:true,minZoom:4,maxZoom:18,worldCopyJump:false,
+ attributionControl:true,tap:true
+}).setView([36.2,138.2],5);
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png',{
+ subdomains:'abcd',maxZoom:20,
+ attribution:'&copy; OpenStreetMap contributors &copy; CARTO'
+}).addTo(map);
+
 el.legend.innerHTML=LEVELS.map(l=>`<div class="legend-item"><i class="legend-dot" style="background:${l.color}"></i><span>${l.icon} ${l.name}</span></div>`).join('');
-function levelOf(id){return Number(visits[id]?.level||0)}function updateStats(){const lv=STATIONS.map(s=>levelOf(s.id)),v=lv.filter(x=>x>=1).length,st=lv.filter(x=>x>=4).length;el.visited.textContent=v;el.stayed.textContent=st;el.left.textContent=STATIONS.length-v;el.pct.textContent=(STATIONS.length?Math.round(v/STATIONS.length*100):0)+'%'}
-function pinIcon(level){return L.divIcon({className:'',html:`<div class="pin" style="background:${LEVELS[level].color}"></div>`,iconSize:[18,22],iconAnchor:[9,20],tooltipAnchor:[0,-16]})}
-function norm(s){return String(s||'').normalize('NFKC').replace(/[ヶケ]/g,'ケ').replace(/\s+/g,'').replace(/市(?=[^市]*区$)/,'').replace(/[市町村区]$/,'')}
-function parseCSV(text){const rows=[];let row=[],field='',q=false;for(let i=0;i<text.length;i++){const ch=text[i];if(q){if(ch==='"'&&text[i+1]==='"'){field+='"';i++}else if(ch==='"')q=false;else field+=ch}else if(ch==='"')q=true;else if(ch===','){row.push(field);field=''}else if(ch==='\n'){row.push(field.replace(/\r$/,''));rows.push(row);row=[];field=''}else field+=ch}if(field||row.length){row.push(field);rows.push(row)}return rows}
-async function loadMunicipalities(){const urls=['https://raw.githubusercontent.com/code4fukui/localgovjp/master/localgovjp-utf8.csv','https://code4fukui.github.io/localgovjp/localgovjp-utf8.csv'];let text='';for(const u of urls){try{const r=await fetch(u);if(r.ok){text=await r.text();break}}catch(_){}}if(!text)throw new Error('position data');const rows=parseCSV(text.replace(/^\uFEFF/,'')),head=rows.shift(),ix=Object.fromEntries(head.map((h,i)=>[h,i]));return rows.filter(r=>r.length>6).map(r=>({pref:r[ix.pref],city:r[ix.city],lat:Number(r[ix.lat]),lng:Number(r[ix.lng]),key:norm(r[ix.city])})).filter(x=>Number.isFinite(x.lat)&&Number.isFinite(x.lng))}
-function findMunicipality(station,munis){const allowed=new Set(REGION_PREFS[station.region]||[]),alias=ALIAS[station.name];if(alias){const exact=munis.find(m=>allowed.has(m.pref)&&m.city===alias);if(exact)return exact}const key=norm(station.name),c=munis.filter(m=>allowed.has(m.pref)&&m.key===key);return c.find(m=>!m.city.includes(' '))||c[0]||null}
-function hav(a,b){const R=6371,p=Math.PI/180,dLat=(b.lat-a.lat)*p,dLon=(b.lng-a.lng)*p,x=Math.sin(dLat/2)**2+Math.cos(a.lat*p)*Math.cos(b.lat*p)*Math.sin(dLon/2)**2;return 2*R*Math.asin(Math.sqrt(x))}
-function drawNetwork(points){if(routeLayer)routeLayer.remove();const edges=new Map();for(const a of points){const near=points.filter(b=>b.id!==a.id).map(b=>[b,hav(a,b)]).sort((x,y)=>x[1]-y[1]);for(const [b,d] of near.slice(0,2)){if(d>220)continue;const key=[a.id,b.id].sort().join('|');if(!edges.has(key))edges.set(key,[a,b,d])}}routeLayer=L.layerGroup([...edges.values()].map(([a,b,d])=>L.polyline([[a.lat,a.lng],[b.lat,b.lng]],{color:'#6f88a7',weight:1.3,opacity:d>120?.18:.34,interactive:false}))).addTo(map);routeLayer.bringToBack()}
-function addMarker(s,loc){const p={...s,lat:loc.lat,lng:loc.lng,pref:loc.pref,municipality:loc.city},marker=L.marker([p.lat,p.lng],{icon:pinIcon(levelOf(s.id)),keyboard:false,riseOnHover:true}).addTo(map);marker.bindTooltip(s.name,{direction:'top',offset:[0,-8],opacity:.96});marker.on('click',()=>openSheet(p));markerById.set(s.id,marker)}
-function openSheet(station){el.sheetRegion.textContent=`${station.pref||station.region} · ${station.municipality||''}`;el.sheetName.textContent=station.name;el.statusGrid.innerHTML=LEVELS.map((l,i)=>`<button class="status-btn ${levelOf(station.id)===i?'active':''}" data-level="${i}" style="${levelOf(station.id)===i?`border-color:${l.color}`:''}"><span>${l.icon}</span>${l.name}</button>`).join('');el.statusGrid.querySelectorAll('button').forEach(btn=>btn.addEventListener('click',()=>setLevel(station,Number(btn.dataset.level))));el.sheetBackdrop.classList.remove('hidden')}
-function setLevel(station,level){if(level===0)delete visits[station.id];else visits[station.id]={level,updatedAt:new Date().toISOString()};localStorage.setItem('nippon-loop-visits-v3',JSON.stringify(visits));const marker=markerById.get(station.id);if(marker)marker.setIcon(pinIcon(level));updateStats();closeSheet()}
-function closeSheet(){el.sheetBackdrop.classList.add('hidden')}el.closeSheetButton.addEventListener('click',closeSheet);el.sheetBackdrop.addEventListener('click',e=>{if(e.target===el.sheetBackdrop)closeSheet()});updateStats();
-(async()=>{try{const munis=await loadMunicipalities(),resolved=[],unresolved=[];for(const s of STATIONS){const loc=findMunicipality(s,munis);if(loc){addMarker(s,loc);resolved.push({...s,lat:loc.lat,lng:loc.lng})}else unresolved.push(s)}drawNetwork(resolved);if(resolved.length)map.fitBounds(L.latLngBounds(resolved.map(p=>[p.lat,p.lng])),{padding:[24,24],maxZoom:6});el.loading.textContent=unresolved.length?`${resolved.length} / 338地点を表示（${unresolved.length}地点は位置確認中）`:'338地点を表示';setTimeout(()=>el.loading.classList.add('hidden'),unresolved.length?4500:1300)}catch(_){el.loading.textContent='地図データの読み込みに失敗しました。再読み込みしてください'}})();
+
+function levelOf(id){return Number(visits[id]?.level||0)}
+function updateStats(){
+ const lv=STATIONS.map(s=>levelOf(s.id)),v=lv.filter(x=>x>=1).length,st=lv.filter(x=>x>=4).length;
+ el.visited.textContent=v;el.stayed.textContent=st;el.left.textContent=STATIONS.length-v;
+ el.pct.textContent=(STATIONS.length?Math.round(v/STATIONS.length*100):0)+'%';
+}
+
+function pinIcon(level){
+ return L.divIcon({
+   className:'',
+   html:`<div class="pin-hit"><div class="pin-core" style="background:${LEVELS[level].color}"></div></div>`,
+   iconSize:[44,44],iconAnchor:[22,22]
+ });
+}
+
+function norm(s){
+ return String(s||'').normalize('NFKC').replace(/[ヶケ]/g,'ケ').replace(/\s+/g,'')
+ .replace(/市(?=[^市]*区$)/,'').replace(/[市町村区]$/,'');
+}
+
+function parseCSV(text){
+ const rows=[];let row=[],field='',q=false;
+ for(let i=0;i<text.length;i++){
+   const ch=text[i];
+   if(q){
+     if(ch==='"'&&text[i+1]==='"'){field+='"';i++}
+     else if(ch==='"')q=false;else field+=ch;
+   }else if(ch==='"')q=true;
+   else if(ch===','){row.push(field);field=''}
+   else if(ch==='\n'){row.push(field.replace(/\r$/,''));rows.push(row);row=[];field=''}
+   else field+=ch;
+ }
+ if(field||row.length){row.push(field);rows.push(row)}
+ return rows;
+}
+
+async function loadMunicipalities(){
+ const urls=[
+  'https://raw.githubusercontent.com/code4fukui/localgovjp/master/localgovjp-utf8.csv',
+  'https://code4fukui.github.io/localgovjp/localgovjp-utf8.csv'
+ ];
+ let text='';
+ for(const u of urls){
+   try{const r=await fetch(u);if(r.ok){text=await r.text();break}}catch(_){}
+ }
+ if(!text)throw new Error('position data');
+ const rows=parseCSV(text.replace(/^\uFEFF/,'')),head=rows.shift(),ix=Object.fromEntries(head.map((h,i)=>[h,i]));
+ return rows.filter(r=>r.length>6).map(r=>({
+   pref:r[ix.pref],city:r[ix.city],lat:Number(r[ix.lat]),lng:Number(r[ix.lng]),
+   lgcode:r[ix.lgcode]||'',regionCode:String(r[ix.lgcode]||'').slice(0,5),key:norm(r[ix.city])
+ })).filter(x=>Number.isFinite(x.lat)&&Number.isFinite(x.lng));
+}
+
+function findMunicipality(station,munis){
+ const allowed=new Set(REGION_PREFS[station.region]||[]),alias=ALIAS[station.name];
+ if(alias){
+   const exact=munis.find(m=>allowed.has(m.pref)&&m.city===alias);
+   if(exact)return exact;
+ }
+ const key=norm(station.name),c=munis.filter(m=>allowed.has(m.pref)&&m.key===key);
+ return c.find(m=>!m.city.includes(' '))||c[0]||null;
+}
+
+function hav(a,b){
+ const R=6371,p=Math.PI/180,dLat=(b.lat-a.lat)*p,dLon=(b.lng-a.lng)*p;
+ const x=Math.sin(dLat/2)**2+Math.cos(a.lat*p)*Math.cos(b.lat*p)*Math.sin(dLon/2)**2;
+ return 2*R*Math.asin(Math.sqrt(x));
+}
+
+function drawNetwork(points){
+ if(routeLayer)routeLayer.remove();
+ const edges=new Map();
+ for(const a of points){
+   const near=points.filter(b=>b.id!==a.id).map(b=>[b,hav(a,b)]).sort((x,y)=>x[1]-y[1]);
+   for(const [b,d] of near.slice(0,2)){
+     if(d>220)continue;
+     const key=[a.id,b.id].sort().join('|');
+     if(!edges.has(key))edges.set(key,[a,b,d]);
+   }
+ }
+ routeLayer=L.layerGroup([...edges.values()].map(([a,b,d])=>
+   L.polyline([[a.lat,a.lng],[b.lat,b.lng]],{color:'#6f8093',weight:1,opacity:0,interactive:false})
+ )).addTo(map);
+ routeLayer.bringToBack();
+ updateRouteVisibility();
+}
+
+function updateRouteVisibility(){
+ if(!routeLayer)return;
+ const z=map.getZoom();
+ const opacity=z<6?0:(z<8?.12:.2);
+ routeLayer.eachLayer(l=>l.setStyle({opacity}));
+}
+
+function addMarker(s,loc){
+ const p={...s,lat:loc.lat,lng:loc.lng,pref:loc.pref,municipality:loc.city,regionCode:loc.regionCode,lgcode:loc.lgcode};
+ const marker=L.marker([p.lat,p.lng],{
+   icon:pinIcon(levelOf(s.id)),keyboard:false,interactive:false,zIndexOffset:levelOf(s.id)*20
+ }).addTo(map);
+ markerById.set(s.id,marker);
+ resolvedStations.push(p);
+}
+
+function nearestStationToClick(latlng,maxPx=34){
+ const click=map.latLngToContainerPoint(latlng);
+ let best=null,bestD=maxPx;
+ for(const s of resolvedStations){
+   const p=map.latLngToContainerPoint([s.lat,s.lng]);
+   const d=click.distanceTo(p);
+   if(d<bestD){best=s;bestD=d}
+ }
+ return best;
+}
+
+map.on('click',e=>{
+ const s=nearestStationToClick(e.latlng,36);
+ if(s)openSheet(s);
+});
+map.on('zoomend',updateRouteVisibility);
+
+function formatInt(n){
+ if(!Number.isFinite(n))return '—';
+ return Math.round(n).toLocaleString('ja-JP');
+}
+function timeLabel(t){
+ const m=String(t||'').match(/(\d{4})/);
+ return m?`${m[1]}年`:'';
+}
+function collectValueObjects(node,out=[]){
+ if(Array.isArray(node)){node.forEach(x=>collectValueObjects(x,out));return out}
+ if(node&&typeof node==='object'){
+   const keys=Object.keys(node);
+   if(keys.some(k=>k.toLowerCase().includes('time')) && ('$' in node || '@value' in node || 'value' in node))out.push(node);
+   for(const v of Object.values(node))collectValueObjects(v,out);
+ }
+ return out;
+}
+function valueFromObject(o){
+ const v=o?.$??o?.['@value']??o?.value;
+ const n=Number(String(v??'').replace(/,/g,''));
+ return Number.isFinite(n)?n:null;
+}
+function objRegion(o){return String(o?.['@regionCode']??o?.regionCode??o?.['@region']??'')}
+function objTime(o){return String(o?.['@time']??o?.time??o?.['@timeCode']??'')}
+
+const STAT_API='https://dashboard.e-stat.go.jp/api/1.0/Json';
+const statCache=new Map();
+let businessIndicatorPromise=null;
+
+async function findMunicipalIndicator(word){
+ const u=`${STAT_API}/getIndicatorInfo?Lang=JP&SearchIndicatorWord=${encodeURIComponent(word)}`;
+ const j=await fetch(u).then(r=>{if(!r.ok)throw new Error('indicator');return r.json()});
+ let objs=j?.GET_META_INDICATOR_INF?.METADATA_INF?.CLASS_INF?.CLASS_OBJ||[];
+ if(!Array.isArray(objs))objs=[objs].filter(Boolean);
+ const score=o=>{
+   const cs=Array.isArray(o?.CLASS)?o.CLASS:[o?.CLASS].filter(Boolean);
+   const municipal=cs.some(c=>String(c?.RegionalRank?.['@code'])==='4'&&String(c?.cycle?.['@code'])==='3');
+   const exact=String(o?.['@name']||'')===word;
+   return (municipal?10:0)+(exact?4:0);
+ };
+ objs.sort((a,b)=>score(b)-score(a));
+ const o=objs.find(x=>score(x)>=10);
+ return o?{code:o['@code'],name:o['@name']||word}:null;
+}
+
+async function fetchLatestStat(indicatorCode,regionCode){
+ const cacheKey=`${indicatorCode}:${regionCode}`;
+ if(statCache.has(cacheKey))return statCache.get(cacheKey);
+ const promise=(async()=>{
+   const params=new URLSearchParams({
+     Lang:'JP',IndicatorCode:indicatorCode,Cycle:'3',RegionLevel:'4',RegionCode:regionCode,
+     IsSeasonalAdjustment:'1',MetaGetFlg:'Y',SectionHeaderFlg:'1'
+   });
+   const r=await fetch(`${STAT_API}/getData?${params}`);
+   if(!r.ok)throw new Error('stat');
+   const j=await r.json();
+   let vals=collectValueObjects(j).filter(o=>valueFromObject(o)!==null);
+   const exact=vals.filter(o=>!objRegion(o)||objRegion(o)===regionCode);
+   if(exact.length)vals=exact;
+   vals.sort((a,b)=>objTime(b).localeCompare(objTime(a)));
+   const o=vals[0];
+   if(!o)return null;
+   return {value:valueFromObject(o),time:objTime(o)};
+ })();
+ statCache.set(cacheKey,promise);
+ return promise;
+}
+
+async function loadCityStats(station){
+ el.populationValue.textContent='取得中…';el.populationMeta.textContent='';
+ el.businessValue.textContent='取得中…';el.businessMeta.textContent='';
+ const requestToken=station.id;
+ el.sheetBackdrop.dataset.stationId=requestToken;
+ let code=station.regionCode;
+ if(station.name==='東京')code='13100';
+ if(!code){
+   el.populationValue.textContent='—';el.businessValue.textContent='—';
+   el.populationMeta.textContent='自治体コード未解決';el.businessMeta.textContent='自治体コード未解決';return;
+ }
+ try{
+   const pop=await fetchLatestStat('0201010000000010000',code);
+   if(el.sheetBackdrop.dataset.stationId!==requestToken)return;
+   if(pop){el.populationValue.textContent=`${formatInt(pop.value)} 人`;el.populationMeta.textContent=`${timeLabel(pop.time)} · 国勢調査/人口推計系`;}
+   else{el.populationValue.textContent='—';el.populationMeta.textContent='データなし';}
+ }catch(_){if(el.sheetBackdrop.dataset.stationId===requestToken){el.populationValue.textContent='—';el.populationMeta.textContent='取得できませんでした';}}
+
+ try{
+   if(!businessIndicatorPromise)businessIndicatorPromise=findMunicipalIndicator('事業所数');
+   let ind=await businessIndicatorPromise;
+   if(!ind)ind=await findMunicipalIndicator('従業者数');
+   if(!ind)throw new Error('no indicator');
+   const biz=await fetchLatestStat(ind.code,code);
+   if(el.sheetBackdrop.dataset.stationId!==requestToken)return;
+   if(biz){el.businessValue.textContent=formatInt(biz.value);el.businessMeta.textContent=`${timeLabel(biz.time)} · ${ind.name}`;}
+   else{el.businessValue.textContent='—';el.businessMeta.textContent='データなし';}
+ }catch(_){if(el.sheetBackdrop.dataset.stationId===requestToken){el.businessValue.textContent='—';el.businessMeta.textContent='取得できませんでした';}}
+}
+
+function openSheet(station){
+ activeStation=station;
+ el.sheetBackdrop.dataset.stationId=station.id;
+ el.sheetRegion.textContent=station.region;
+ el.sheetName.textContent=station.name;
+ el.cityPlace.textContent=`対応自治体：${station.pref||''} ${station.municipality||''}`;
+ el.momoPrice.textContent=station.momo.price;
+ el.momoIncome.textContent=station.momo.income;
+ el.momoYield.textContent=station.momo.yield;
+ el.statusGrid.innerHTML=LEVELS.map((l,i)=>`<button type="button" class="status-btn ${levelOf(station.id)===i?'active':''}" data-level="${i}" style="${levelOf(station.id)===i?`border-color:${l.color}`:''}"><span>${l.icon}</span>${l.name}</button>`).join('');
+ el.statusGrid.querySelectorAll('button').forEach(btn=>btn.addEventListener('click',()=>setLevel(station,Number(btn.dataset.level))));
+ el.sheetBackdrop.classList.remove('hidden');
+ loadCityStats(station);
+}
+
+function setLevel(station,level){
+ if(level===0)delete visits[station.id];
+ else visits[station.id]={level,updatedAt:new Date().toISOString()};
+ localStorage.setItem('nippon-loop-visits-v3',JSON.stringify(visits));
+ const marker=markerById.get(station.id);
+ if(marker){
+   marker.setIcon(pinIcon(level));
+   marker.setZIndexOffset(level*20);
+ }
+ updateStats();
+ closeSheet();
+}
+function closeSheet(){el.sheetBackdrop.classList.add('hidden');activeStation=null}
+el.closeSheetButton.addEventListener('click',closeSheet);
+el.sheetBackdrop.addEventListener('click',e=>{if(e.target===el.sheetBackdrop)closeSheet()});
+el.resetMap.addEventListener('click',()=>{if(fullBounds)map.fitBounds(fullBounds,{padding:[18,18],maxZoom:6})});
+updateStats();
+
+(async()=>{
+ try{
+   const munis=await loadMunicipalities(),unresolved=[];
+   for(const s of STATIONS){
+     const loc=findMunicipality(s,munis);
+     if(loc)addMarker(s,loc);else unresolved.push(s);
+   }
+   drawNetwork(resolvedStations);
+   if(resolvedStations.length){
+     fullBounds=L.latLngBounds(resolvedStations.map(p=>[p.lat,p.lng]));
+     map.fitBounds(fullBounds,{padding:[18,18],maxZoom:6});
+   }
+   el.loading.textContent=unresolved.length?`${resolvedStations.length} / 338地点を表示（${unresolved.length}地点は位置確認中）`:'338地点を表示';
+   setTimeout(()=>el.loading.classList.add('hidden'),unresolved.length?4000:1100);
+ }catch(_){
+   el.loading.textContent='地図データの読み込みに失敗しました。再読み込みしてください';
+ }
+})();
 </script>
 </body>
 </html>
