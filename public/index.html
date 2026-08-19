@@ -1,1 +1,254 @@
-<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Nippon Loop | 全国マップ</title><style>*{box-sizing:border-box}body{margin:0;background:#f4f7fb;color:#132238;font-family:system-ui,-apple-system,sans-serif}header{background:linear-gradient(135deg,#102642,#1d4c7b);color:#fff;padding:18px 4%;display:flex;justify-content:space-between;align-items:center}.brand{font-weight:900;letter-spacing:.13em}.sub{font-size:12px;opacity:.75}.score{text-align:right;font-size:12px}.score b{display:block;font-size:28px}.wrap{max-width:1400px;margin:auto;padding:14px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}.stat,.card{background:#fff;border:1px solid #e1e7ef;border-radius:18px;box-shadow:0 8px 28px #173d6810}.stat{padding:13px}.stat b{font-size:26px;display:block}.stat span,.muted{font-size:12px;color:#718197}.card{padding:12px}.levels{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin-bottom:12px}.levelKey{border:1px solid #dfe6ef;border-radius:10px;padding:8px;text-align:center;background:#fff;font-size:12px}.levelKey span{font-size:18px}.mapShell{overflow:hidden;border-radius:14px;background:linear-gradient(#f8fbff,#fff);touch-action:none}.mapCanvas{width:100%;height:min(74vh,850px);display:block;cursor:grab}.mapCanvas:active{cursor:grabbing}.route{stroke:#c8d4e1;stroke-width:2}.station{stroke:#fff;stroke-width:1.4;cursor:pointer}.stationLabel{font-size:7px;font-weight:700;fill:#20344c;paint-order:stroke;stroke:#fff;stroke-width:2.2px}.s0{fill:#aeb9c6}.s1{fill:#5f8fd8}.s2{fill:#28a879}.s3{fill:#e7a32b}.s4{fill:#8b61c2}.s5{fill:#d6537e}.controls{display:flex;gap:8px;justify-content:flex-end;margin-bottom:8px}.controls button{border:0;border-radius:10px;padding:8px 11px;background:#e8eef5;color:#27415f;font-weight:800}.overlay{position:fixed;inset:0;background:#07122199;display:flex;align-items:center;justify-content:center;padding:18px;z-index:20}.overlay.hidden{display:none}.modal{background:#fff;width:min(440px,100%);border-radius:22px;padding:24px}.modal h2{font-size:30px;margin:3px 0 16px}.statusPicker{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.statusChoice{border:1px solid #dfe6ef;border-radius:12px;padding:13px 10px;text-align:left;font-weight:800}.statusChoice span{font-size:18px;margin-right:7px}.statusChoice:hover{background:#f5f8fc}.close{margin-top:12px;width:100%;border:0;border-radius:10px;padding:10px;background:#edf1f5;color:#52657b;font-weight:700}footer{text-align:center;color:#93a0af;font-size:11px;padding:18px}@media(max-width:700px){.levels{grid-template-columns:repeat(3,1fr)}.stats{grid-template-columns:repeat(3,1fr)}.stat b{font-size:21px}.mapCanvas{height:68vh}.stationLabel{font-size:8px}.statusPicker{grid-template-columns:1fr}}</style></head><body><header><div><div class="brand">NIPPON LOOP</div><div class="sub">桃鉄2020 物件駅ベース · 全国マップ</div></div><div class="score"><b id="pct">0%</b>338物件駅 到達率</div></header><main class="wrap"><div id="levelLegend" class="levels"></div><div class="stats"><div class="stat"><b id="visited">0</b><span>通過以上</span></div><div class="stat"><b id="stayed">0</b><span>泊まった以上</span></div><div class="stat"><b id="left">338</b><span>行ってない</span></div></div><section class="card"><div class="controls"><button id="zoomOut">−</button><button id="reset">全体表示</button><button id="zoomIn">＋</button></div><div class="mapShell"><svg id="map" class="mapCanvas" viewBox="0 0 1200 1000"><g id="viewport"></g></svg></div></section></main><footer>駅名リスト: Game8「桃鉄スイッチ 全物件（駅）一覧」参考 · 記録はこの端末のブラウザに保存</footer><div id="modal" class="overlay hidden"><div class="modal"><div class="muted" id="where"></div><h2 id="name"></h2><div id="statusPicker" class="statusPicker"></div><button class="close" id="closeModal">閉じる</button></div></div><script>const DATA={"北海道":["洞爺湖","札幌","ニセコ","釧路","苫小牧","旭川","余市","美瑛","富良野","函館","上川","室蘭","夕張","稚内","網走","池田","羅臼","定山渓","根室","芽室","留萌","増毛","襟裳","紋別","ススキノ","浜頓別","登別","江差","中標津","興部","和寒","帯広","松前","小樽","礼文","別海","厚岸","北見","砂川","足寄","中札内","陸別","利尻","摩周","長万部","天塩","遠軽","斜里","美幌","阿寒","八雲","名寄","森"],"東北":["登米","釜石","仙台","いわき","福島","青森","酒田","三沢","鳴子","郡山","五所川原","鶴岡","竜飛","大間","石巻","花巻","角館","平泉","八戸","横手","女川","金木","三戸","会津若松","山形","弘前","天童","米沢","名取","気仙沼","田子","むつ","菜の花","黒石","大船渡","遠野","秋田","盛岡","久慈","松島","喜多方"],"関東":["幕張","品川","横浜","浅草","川崎","横須賀","お台場","新宿","千駄ヶ谷","東京","千葉","銀座","原宿","日本橋","熊谷","さいたま","前橋","後楽園","上野","船橋","渋谷","秩父","八王子","秋葉原","箱根","水戸","館山","ひたちなか","草津","高崎","中華街","鎌倉","桐生","栃木","鴨川","湯河原","銚子","那須","深谷","北茨城","佐原","大久保","伊豆大島","笠間","土浦","宇都宮","八丈島","沼田","小田原"],"中部":["豊田","名古屋","名古屋港","浜松","小松","湯沢","新潟","安城","瀬戸","豊橋","熱海","香林坊","三島","高岡","長野","白馬","金沢","栄","長岡","茶屋街","軽井沢","修善寺","上田","上越","岡崎","富士宮","福井","富士吉田","和倉温泉","富山","東尋坊","中津川","高山","村上","甲府","常滑","魚沼","土岐","郡上","射水","伊豆高原","松崎","静岡","糸魚川","鯖江","敦賀","駒ヶ根","松本","小布施","佐渡","岐阜","氷見","小淵沢","千曲","下田","小浜"],"近畿":["京都","天保山","門真","姫路","北浜","天王寺","四日市","神戸","なんば","吹田","大津","伊勢","福知山","長浜","大阪","京橋","白浜","奈良","嵐山","津","有馬","堺","近江八幡","城崎","松阪","鳥羽","赤穂","岸和田","祇園","伊賀","御坊","彦根","五條","三田","新宮","明石","淡路島","和歌山","出石","橿原","鶴橋","舞鶴"],"中国":["岡山","尾道","鞆の浦","宇部","福山","広島","山口","石見銀山","境港","呉","下関","湯田温泉","萩","津和野","柳井","生口島","安来","大根島","倉敷","仙崎","蒜山","松江","鳥取","浜田","岩国","日生","宮島","出雲"],"四国":["鳴門","坂出","四国中央","今治","道後","松山","徳島","高松","大三島","須崎","高知","土佐清水","宇和島","四万十川","さぬき","安芸"],"九州・沖縄":["日田","熊本","久留米","中洲","佐世保","博多","太宰府","鳥栖","本部","門司港","那覇","小倉","宮古島","水俣","湯布院","有田","宮崎","諫早","長崎","人吉","屋久島","知覧","佐賀","天草","久米島","西都","別府","名護","壱岐","鹿児島","五島","奄美大島","鹿屋","石垣島","都城","竹田","枕崎","伊万里","対馬","秋月","八代","中津","糸島","茂木","大宜味","大分","飯塚","桜島","唐津","種子島","うるま","小城","金武"]};const LEVELS=[{n:'行ってない',e:'○'},{n:'通過した',e:'🚃'},{n:'歩いた',e:'👟'},{n:'飲んだ',e:'🍺'},{n:'泊まった',e:'🛏️'},{n:'住んだ',e:'🏠'}];const REGION_LAYOUT={"北海道":{x:930,y:120,w:180,h:250},"東北":{x:830,y:330,w:180,h:260},"関東":{x:790,y:610,w:210,h:210},"中部":{x:570,y:560,w:220,h:230},"近畿":{x:430,y:620,w:150,h:190},"中国":{x:260,y:610,w:170,h:180},"四国":{x:340,y:800,w:170,h:130},"九州・沖縄":{x:80,y:650,w:190,h:250}};const ALL=[];Object.entries(DATA).forEach(([region,names])=>{const box=REGION_LAYOUT[region],cols=Math.ceil(Math.sqrt(names.length*box.w/box.h)),rows=Math.ceil(names.length/cols);names.forEach((name,i)=>{const c=i%cols,r=Math.floor(i/cols);ALL.push({id:region+'-'+i,name,region,x:box.x+(c+.5)*box.w/cols,y:box.y+(r+.5)*box.h/rows})})});let V=JSON.parse(localStorage.getItem('nippon-loop-visits-v3')||'{}');let sel=null;const vp=document.getElementById('viewport'),svg=document.getElementById('map');let scale=1,tx=0,ty=0,drag=false,sx=0,sy=0;levelLegend.innerHTML=LEVELS.map((l,i)=>`<div class="levelKey"><span>${l.e}</span><br>${l.n}</div>`).join('');function levelOf(id){return Number(V[id]?.level||0)}function draw(){vp.innerHTML='';const regionOrder=Object.keys(DATA);for(let i=0;i<regionOrder.length-1;i++){const a=REGION_LAYOUT[regionOrder[i]],b=REGION_LAYOUT[regionOrder[i+1]],ln=document.createElementNS('http://www.w3.org/2000/svg','line');ln.setAttribute('x1',a.x+a.w/2);ln.setAttribute('y1',a.y+a.h/2);ln.setAttribute('x2',b.x+b.w/2);ln.setAttribute('y2',b.y+b.h/2);ln.setAttribute('class','route');vp.appendChild(ln)}ALL.forEach(s=>{const g=document.createElementNS('http://www.w3.org/2000/svg','g');const c=document.createElementNS('http://www.w3.org/2000/svg','circle');const t=document.createElementNS('http://www.w3.org/2000/svg','text');c.setAttribute('cx',s.x);c.setAttribute('cy',s.y);c.setAttribute('r',6);c.setAttribute('class','station s'+levelOf(s.id));t.setAttribute('x',s.x+8);t.setAttribute('y',s.y+2.5);t.setAttribute('class','stationLabel');t.textContent=s.name;g.append(c,t);g.addEventListener('click',e=>{e.stopPropagation();openStation(s)});vp.appendChild(g)});updateStats();applyTransform()}function updateStats(){const levels=ALL.map(s=>levelOf(s.id));const v=levels.filter(x=>x>=1).length,st=levels.filter(x=>x>=4).length;visited.textContent=v;stayed.textContent=st;left.textContent=ALL.length-v;pct.textContent=Math.round(v/ALL.length*100)+'%'}function openStation(s){sel=s;where.textContent=s.region;name.textContent=s.name;statusPicker.innerHTML=LEVELS.map((l,i)=>`<button class="statusChoice" data-level="${i}"><span>${l.e}</span>${l.n}</button>`).join('');statusPicker.querySelectorAll('button').forEach(b=>b.onclick=()=>{const lv=Number(b.dataset.level);if(lv===0)delete V[sel.id];else V[sel.id]={level:lv,updatedAt:new Date().toISOString()};localStorage.setItem('nippon-loop-visits-v3',JSON.stringify(V));modal.classList.add('hidden');draw()});modal.classList.remove('hidden')}closeModal.onclick=()=>modal.classList.add('hidden');modal.onclick=e=>{if(e.target===modal)modal.classList.add('hidden')};function applyTransform(){vp.setAttribute('transform',`translate(${tx} ${ty}) scale(${scale})`)}zoomIn.onclick=()=>{scale=Math.min(3.5,scale*1.25);applyTransform()};zoomOut.onclick=()=>{scale=Math.max(.65,scale/1.25);applyTransform()};reset.onclick=()=>{scale=1;tx=0;ty=0;applyTransform()};svg.addEventListener('pointerdown',e=>{drag=true;sx=e.clientX;sy=e.clientY;svg.setPointerCapture(e.pointerId)});svg.addEventListener('pointermove',e=>{if(!drag)return;tx+=(e.clientX-sx)/scale;ty+=(e.clientY-sy)/scale;sx=e.clientX;sy=e.clientY;applyTransform()});svg.addEventListener('pointerup',()=>drag=false);svg.addEventListener('wheel',e=>{e.preventDefault();scale=Math.max(.65,Math.min(3.5,scale*(e.deltaY<0?1.12:.89)));applyTransform()},{passive:false});draw();</script></body></html>
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Nippon Loop | 日本一周マップ</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root{--bg:#f4f7fb;--text:#132238;--muted:#6f8094;--panel:#fff;--border:#dfe6ef;--navy:#173d68}
+*{box-sizing:border-box}html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{min-height:100dvh}header{height:64px;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;background:#102642;color:#fff}
+.brand{font-weight:900;letter-spacing:.12em;font-size:17px}.sub{font-size:11px;opacity:.75;margin-top:2px}.score{text-align:right;font-size:10px;opacity:.85}.score b{display:block;font-size:22px;line-height:1}
+main{padding:10px 10px calc(12px + env(safe-area-inset-bottom));max-width:1400px;margin:auto}
+.legend{display:flex;gap:6px;overflow-x:auto;padding:1px 0 9px;scrollbar-width:none}.legend::-webkit-scrollbar{display:none}
+.legend-item{flex:0 0 auto;display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--border);border-radius:999px;padding:7px 10px;font-size:12px;white-space:nowrap}
+.legend-dot{width:10px;height:10px;border-radius:50%}
+.map-wrap{position:relative;background:#fff;border:1px solid var(--border);border-radius:18px;overflow:hidden}
+#map{height:calc(100dvh - 132px);min-height:520px;max-height:860px;width:100%;background:#e9eef4}
+.metrics{position:absolute;z-index:500;top:10px;left:10px;display:flex;gap:6px;pointer-events:none}
+.metric{background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border:1px solid rgba(205,215,226,.9);border-radius:12px;padding:7px 9px;min-width:72px}
+.metric b{display:block;font-size:18px;line-height:1.05}.metric span{font-size:9px;color:var(--muted)}
+.loading{position:absolute;z-index:520;left:50%;bottom:18px;transform:translateX(-50%);background:rgba(16,38,66,.9);color:white;border-radius:999px;padding:8px 12px;font-size:12px;white-space:nowrap}
+.loading.hidden{display:none}
+.note{position:absolute;z-index:500;right:10px;bottom:10px;background:rgba(255,255,255,.92);border:1px solid var(--border);border-radius:9px;padding:5px 8px;font-size:9px;color:var(--muted);max-width:230px}
+.pin{width:15px;height:15px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid #fff;box-shadow:0 1px 5px #0005}
+.pin::after{content:"";position:absolute;width:4px;height:4px;background:#fff;border-radius:50%;left:3.5px;top:3.5px}
+.leaflet-div-icon{background:transparent;border:0}.leaflet-control-attribution{font-size:8px}
+.leaflet-tooltip{font-size:12px;font-weight:700;border:0;border-radius:7px;box-shadow:0 2px 10px #0002}
+.route-line{stroke-linecap:round}
+.sheet-backdrop{position:fixed;inset:0;background:#07122166;z-index:2000;display:flex;align-items:flex-end;justify-content:center;padding:12px}
+.sheet-backdrop.hidden{display:none}.sheet{width:min(520px,100%);background:#fff;border-radius:20px;padding:18px 16px calc(16px + env(safe-area-inset-bottom))}
+.sheet-head{display:flex;justify-content:space-between;gap:12px;align-items:start;margin-bottom:12px}.sheet h2{margin:2px 0 0;font-size:27px}.sheet small{color:var(--muted)}
+.close{border:0;background:#eef2f6;width:36px;height:36px;border-radius:50%;font-size:21px;color:#455a72}
+.status-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.status-btn{border:1px solid var(--border);background:#fff;border-radius:13px;padding:12px;text-align:left;font:inherit;font-weight:800;color:var(--text)}
+.status-btn span{font-size:20px;margin-right:7px}.status-btn.active{border-width:2px}
+footer{font-size:9px;color:#7d8b9c;text-align:center;padding:8px 12px 12px}
+@media(max-width:640px){header{height:58px;padding:8px 12px}.brand{font-size:15px}.score b{font-size:20px}main{padding:8px}#map{height:calc(100dvh - 118px);min-height:480px}.metric{min-width:64px;padding:6px 8px}.metric b{font-size:16px}.status-grid{grid-template-columns:1fr 1fr}.note{display:none}}
+</style>
+</head>
+<body>
+<header>
+  <div><div class="brand">NIPPON LOOP</div><div class="sub">桃鉄2020 物件駅ベース · 日本一周管理</div></div>
+  <div class="score"><b id="pct">0%</b>338駅 到達率</div>
+</header>
+<main>
+  <div id="legend" class="legend"></div>
+  <section class="map-wrap">
+    <div id="map"></div>
+    <div class="metrics">
+      <div class="metric"><b id="visited">0</b><span>通過以上</span></div>
+      <div class="metric"><b id="stayed">0</b><span>泊まった以上</span></div>
+      <div class="metric"><b id="left">338</b><span>行ってない</span></div>
+    </div>
+    <div id="loading" class="loading">都市位置を読み込み中…</div>
+    <div class="note">線は地理的に近い都市を結ぶ簡略ネットワークです</div>
+  </section>
+</main>
+<footer>地図 © OpenStreetMap contributors · 自治体位置: code4fukui/localgovjp · 駅名: Game8参考</footer>
+<div id="sheetBackdrop" class="sheet-backdrop hidden">
+  <div class="sheet">
+    <div class="sheet-head">
+      <div><small id="sheetRegion"></small><h2 id="sheetName"></h2></div>
+      <button id="closeSheet" class="close" aria-label="閉じる">×</button>
+    </div>
+    <div id="statusGrid" class="status-grid"></div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="/data/hokkaido.js"></script>
+<script src="/data/tohoku.js"></script>
+<script src="/data/kanto.js"></script>
+<script src="/data/chubu.js"></script>
+<script src="/data/kinki.js"></script>
+<script src="/data/chugoku.js"></script>
+<script src="/data/shikoku.js"></script>
+<script src="/data/kyushu.js"></script>
+<script>
+const STATIONS=Object.entries(window.STATION_REGIONS||{}).flatMap(([region,names])=>names.map((name,i)=>({id:`${region}-${i}`,name,region})));
+const LEVELS=[
+  {name:"行ってない",icon:"○",color:"#9aa7b5"},
+  {name:"通過した",icon:"🚃",color:"#4f83cc"},
+  {name:"歩いた",icon:"👟",color:"#24a176"},
+  {name:"飲んだ",icon:"🍺",color:"#d99520"},
+  {name:"泊まった",icon:"🛏️",color:"#7d59b5"},
+  {name:"住んだ",icon:"🏠",color:"#cf4f78"}
+];
+const REGION_PREFS={
+"北海道":["北海道"],
+"東北":["青森県","岩手県","宮城県","秋田県","山形県","福島県"],
+"関東":["茨城県","栃木県","群馬県","埼玉県","千葉県","東京都","神奈川県"],
+"中部":["新潟県","富山県","石川県","福井県","山梨県","長野県","岐阜県","静岡県","愛知県"],
+"近畿":["三重県","滋賀県","京都府","大阪府","兵庫県","奈良県","和歌山県"],
+"中国":["鳥取県","島根県","岡山県","広島県","山口県"],
+"四国":["徳島県","香川県","愛媛県","高知県"],
+"九州・沖縄":["福岡県","佐賀県","長崎県","熊本県","大分県","宮崎県","鹿児島県","沖縄県"]
+};
+const ALIAS={
+"ススキノ":"札幌市 中央区","定山渓":"札幌市 南区","襟裳":"えりも町","摩周":"弟子屈町","阿寒":"釧路市",
+"竜飛":"外ヶ浜町","鳴子":"大崎市","金木":"五所川原市","菜の花":"横浜町",
+"幕張":"千葉市 美浜区","浅草":"台東区","お台場":"港区","千駄ヶ谷":"渋谷区","東京":"千代田区","銀座":"中央区",
+"原宿":"渋谷区","日本橋":"中央区","後楽園":"文京区","上野":"台東区","秋葉原":"千代田区","中華街":"横浜市 中区",
+"佐原":"香取市","大久保":"新宿区","伊豆大島":"大島町","八丈島":"八丈町",
+"名古屋港":"名古屋市 港区","香林坊":"金沢市","栄":"名古屋市 中区","茶屋街":"金沢市","修善寺":"伊豆市",
+"和倉温泉":"七尾市","東尋坊":"坂井市","伊豆高原":"伊東市","小淵沢":"北杜市",
+"天保山":"大阪市 港区","北浜":"大阪市 中央区","天王寺":"大阪市 天王寺区","なんば":"大阪市 中央区","京橋":"大阪市 都島区",
+"嵐山":"京都市 右京区","有馬":"神戸市 北区","城崎":"豊岡市","祇園":"京都市 東山区","淡路島":"洲本市","出石":"豊岡市","鶴橋":"大阪市 生野区",
+"鞆の浦":"福山市","石見銀山":"大田市","湯田温泉":"山口市","生口島":"尾道市","大根島":"松江市","仙崎":"長門市",
+"蒜山":"真庭市","日生":"備前市","宮島":"廿日市市",
+"道後":"松山市","大三島":"今治市","四万十川":"四万十市",
+"中洲":"福岡市 博多区","博多":"福岡市 博多区","門司港":"北九州市 門司区","小倉":"北九州市 小倉北区",
+"湯布院":"由布市","屋久島":"屋久島町","知覧":"南九州市","奄美大島":"奄美市","石垣島":"石垣市",
+"種子島":"西之表市","秋月":"朝倉市","桜島":"鹿児島市","茂木":"長崎市"
+};
+let visits=JSON.parse(localStorage.getItem("nippon-loop-visits-v3")||"{}");
+let currentStation=null;
+let markerById=new Map();
+let pointById=new Map();
+let routeLayer=null;
+
+const map=L.map("map",{zoomControl:true,preferCanvas:true,minZoom:4,maxZoom:15}).setView([36.2,138.2],5);
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
+  maxZoom:19,
+  attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
+
+document.getElementById("legend").innerHTML=LEVELS.map(l=>`<div class="legend-item"><i class="legend-dot" style="background:${l.color}"></i><span>${l.icon} ${l.name}</span></div>`).join("");
+
+function levelOf(id){return Number(visits[id]?.level||0)}
+function updateStats(){
+  const levels=STATIONS.map(s=>levelOf(s.id));
+  const v=levels.filter(x=>x>=1).length;
+  const st=levels.filter(x=>x>=4).length;
+  document.getElementById("visited").textContent=v;
+  document.getElementById("stayed").textContent=st;
+  document.getElementById("left").textContent=STATIONS.length-v;
+  document.getElementById("pct").textContent=Math.round(v/STATIONS.length*100)+"%";
+}
+function pinIcon(level){
+  return L.divIcon({
+    className:"",
+    html:`<div class="pin" style="background:${LEVELS[level].color}"></div>`,
+    iconSize:[18,22],iconAnchor:[9,20],tooltipAnchor:[0,-16]
+  });
+}
+function norm(s){
+  return String(s||"").normalize("NFKC").replace(/[ヶケ]/g,"ケ").replace(/\s+/g,"").replace(/市(?=[^市]*区$)/,"").replace(/[市町村区]$/,"");
+}
+function parseCSV(text){
+  const rows=[];let row=[],field="",q=false;
+  for(let i=0;i<text.length;i++){const ch=text[i];
+    if(q){if(ch==='"'&&text[i+1]==='"'){field+='"';i++}else if(ch==='"')q=false;else field+=ch}
+    else{if(ch==='"')q=true;else if(ch===','){row.push(field);field=""}else if(ch==='\n'){row.push(field.replace(/\r$/,"") );rows.push(row);row=[];field=""}else field+=ch}
+  }
+  if(field||row.length){row.push(field);rows.push(row)}
+  return rows;
+}
+async function loadMunicipalities(){
+  const urls=[
+    "https://raw.githubusercontent.com/code4fukui/localgovjp/master/localgovjp-utf8.csv",
+    "https://code4fukui.github.io/localgovjp/localgovjp-utf8.csv"
+  ];
+  let text="";
+  for(const u of urls){try{const r=await fetch(u);if(r.ok){text=await r.text();break}}catch(e){}}
+  if(!text)throw new Error("自治体位置データを取得できませんでした");
+  const rows=parseCSV(text.replace(/^\uFEFF/,""));
+  const head=rows.shift();
+  const ix=Object.fromEntries(head.map((h,i)=>[h,i]));
+  return rows.filter(r=>r.length>6).map(r=>({
+    pref:r[ix.pref],city:r[ix.city],lat:Number(r[ix.lat]),lng:Number(r[ix.lng]),key:norm(r[ix.city])
+  })).filter(x=>Number.isFinite(x.lat)&&Number.isFinite(x.lng));
+}
+function findMunicipality(station,munis){
+  const allowed=new Set(REGION_PREFS[station.region]||[]);
+  const alias=ALIAS[station.name];
+  if(alias){
+    const hit=munis.find(m=>allowed.has(m.pref)&&m.city===alias);
+    if(hit)return hit;
+  }
+  const key=norm(station.name);
+  const candidates=munis.filter(m=>allowed.has(m.pref)&&m.key===key);
+  if(candidates.length)return candidates.find(m=>!m.city.includes(" "))||candidates[0];
+  return null;
+}
+function hav(a,b){
+  const R=6371,p=Math.PI/180,dLat=(b.lat-a.lat)*p,dLon=(b.lng-a.lng)*p;
+  const x=Math.sin(dLat/2)**2+Math.cos(a.lat*p)*Math.cos(b.lat*p)*Math.sin(dLon/2)**2;
+  return 2*R*Math.asin(Math.sqrt(x));
+}
+function drawNetwork(points){
+  if(routeLayer)routeLayer.remove();
+  const edges=new Map();
+  for(const a of points){
+    const near=points.filter(b=>b.id!==a.id).map(b=>[b,hav(a,b)]).sort((x,y)=>x[1]-y[1]);
+    const picks=near.slice(0,1).concat(near.filter(x=>x[1]<85).slice(1,2));
+    for(const [b,d] of picks){
+      const key=[a.id,b.id].sort().join("|");
+      if(!edges.has(key))edges.set(key,[a,b,d]);
+    }
+  }
+  routeLayer=L.layerGroup([...edges.values()].map(([a,b,d])=>L.polyline([[a.lat,a.lng],[b.lat,b.lng]],{
+    color:"#7089a8",weight:1.2,opacity:d>150?.18:.32,interactive:false
+  }))).addTo(map);
+  routeLayer.bringToBack();
+}
+function addMarker(s,loc){
+  const p={...s,lat:loc.lat,lng:loc.lng,pref:loc.pref,municipality:loc.city};
+  pointById.set(s.id,p);
+  const marker=L.marker([p.lat,p.lng],{icon:pinIcon(levelOf(s.id)),keyboard:false}).addTo(map);
+  marker.bindTooltip(s.name,{direction:"top",offset:[0,-8],opacity:.96});
+  marker.on("click",()=>openSheet(p));
+  markerById.set(s.id,marker);
+}
+function openSheet(station){
+  currentStation=station;
+  document.getElementById("sheetRegion").textContent=`${station.pref||station.region} · ${station.municipality||""}`;
+  document.getElementById("sheetName").textContent=station.name;
+  const grid=document.getElementById("statusGrid");
+  grid.innerHTML=LEVELS.map((l,i)=>`<button class="status-btn ${levelOf(station.id)===i?"active":""}" data-level="${i}" style="${levelOf(station.id)===i?`border-color:${l.color}`:''}"><span>${l.icon}</span>${l.name}</button>`).join("");
+  grid.querySelectorAll("button").forEach(btn=>btn.addEventListener("click",()=>setLevel(station,Number(btn.dataset.level))));
+  document.getElementById("sheetBackdrop").classList.remove("hidden");
+}
+function setLevel(station,level){
+  if(level===0)delete visits[station.id];else visits[station.id]={level,updatedAt:new Date().toISOString()};
+  localStorage.setItem("nippon-loop-visits-v3",JSON.stringify(visits));
+  const marker=markerById.get(station.id);if(marker)marker.setIcon(pinIcon(level));
+  updateStats();
+  closeSheet();
+}
+function closeSheet(){document.getElementById("sheetBackdrop").classList.add("hidden");currentStation=null}
+document.getElementById("closeSheet").addEventListener("click",closeSheet);
+document.getElementById("sheetBackdrop").addEventListener("click",e=>{if(e.target.id==="sheetBackdrop")closeSheet()});
+updateStats();
+
+(async()=>{
+  const loading=document.getElementById("loading");
+  try{
+    const munis=await loadMunicipalities();
+    const resolved=[],unresolved=[];
+    for(const s of STATIONS){
+      const loc=findMunicipality(s,munis);
+      if(loc){addMarker(s,loc);resolved.push({...s,lat:loc.lat,lng:loc.lng})}else unresolved.push(s);
+    }
+    drawNetwork(resolved);
+    if(resolved.length)map.fitBounds(L.latLngBounds(resolved.map(p=>[p.lat,p.lng])),{padding:[28,28],maxZoom:6});
+    loading.textContent=unresolved.length?`${resolved.length} / 338地点を表示（${unresolved.length}地点は位置確認中）`:`338地点を表示`;
+    setTimeout(()=>loading.classList.add("hidden"),unresolved.length?4500:1600);
+  }catch(err){
+    loading.textContent="都市位置データの読み込みに失敗しました。再読み込みしてください";
+  }
+})();
+</script>
+</body>
+</html>
