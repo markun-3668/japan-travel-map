@@ -1,0 +1,1 @@
+window.STATION_REGIONS=window.STATION_REGIONS||{};window.STATION_REGIONS["四国"]=["鳴門","坂出","四国中央","今治","道後","松山","徳島","高松","大三島","須崎","高知","土佐清水","宇和島","四万十川","さぬき","安芸"];
